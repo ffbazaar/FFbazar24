@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FFBazar24 Premium</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f2f2f7;
+padding-bottom:90px;
+}
+
+/* HEADER */
+
+header{
+background:#ffffff;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+position:sticky;
+top:0;
+z-index:999;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo img{
+width:50px;
+height:50px;
+border-radius:50%;
+border:2px solid #7a28ff;
+}
+
+.logo h2{
+color:#7a28ff;
+font-size:28px;
+}
+
+.wallet{
+background:#7a28ff;
+color:#fff;
+padding:12px 18px;
+border-radius:18px;
+font-weight:bold;
+}
+
+/* TITLE */
+
+.title{
+padding:20px 15px 10px;
+font-size:36px;
+font-weight:bold;
+text-align:center;
+color:#1d3d73;
+font-family:Georgia;
+}
+
+/* PRODUCTS */
+
+.products{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:16px;
+padding:15px;
+}
+
+.card{
+background:#fff;
+border-radius:16px;
+overflow:hidden;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+transition:0.3s;
+cursor:pointer;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card img{
+width:100%;
+height:120px;
+object-fit:cover;
+}
+
+.card-content{
+padding:12px;
+text-align:center;
+}
+
+.card-content h3{
+font-size:15px;
+color:#243b63;
+line-height:22px;
+}
+
+/* PACKAGE SECTION */
+
+.package-box{
+margin:15px;
+background:#fff;
+border-radius:18px;
+padding:18px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+.package-title{
+font-size:28px;
+font-weight:bold;
+margin-bottom:18px;
+color:#243b63;
+}
+
+.package-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:14px;
+}
+
+.package{
+border:2px solid #e4d7ff;
+padding:18px;
+border-radius:14px;
+text-align:center;
+transition:0.3s;
+cursor:pointer;
+}
+
+.package:hover{
+border-color:#7a28ff;
+background:#f7f1ff;
+}
+
+.package h4{
+font-size:23px;
+color:#243b63;
+margin-bottom:10px;
+}
+
+.package p{
+font-size:22px;
+font-weight:bold;
+color:#7a28ff;
+}
+
+/* ACCOUNT INFO */
+
+.info-box{
+margin:15px;
+background:#fff;
+border-radius:18px;
+padding:18px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+.info-title{
+font-size:30px;
+font-weight:bold;
+margin-bottom:15px;
+color:#243b63;
+}
+
+.input-box{
+width:100%;
+padding:15px;
+border:2px solid #d9c8ff;
+border-radius:12px;
+margin-bottom:15px;
+font-size:16px;
+outline:none;
+}
+
+.input-box:focus{
+border-color:#7a28ff;
+}
+
+/* PAYMENT */
+
+.payment-methods{
+display:flex;
+gap:12px;
+margin-top:10px;
+}
+
+.method{
+flex:1;
+background:#fff;
+border:2px solid #d9c8ff;
+border-radius:14px;
+padding:15px;
+text-align:center;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+.method:hover{
+border-color:#7a28ff;
+background:#f6f0ff;
+}
+
+.buy-btn{
+width:100%;
+padding:16px;
+border:none;
+border-radius:14px;
+background:#7a28ff;
+color:#fff;
+font-size:20px;
+font-weight:bold;
+margin-top:20px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.buy-btn:hover{
+background:#6319e8;
+}
+
+/* RULES */
+
+.rules{
+margin:15px;
+background:#fff;
+border-radius:18px;
+padding:20px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+.rules h3{
+font-size:28px;
+margin-bottom:18px;
+color:#243b63;
+}
+
+.rules p{
+margin-bottom:18px;
+font-size:17px;
+line-height:28px;
+color:#444;
+}
+
+/* HELP BUTTON */
+
+.help-btn{
+position:fixed;
+right:18px;
+bottom:100px;
+background:#ff2a2a;
+color:#fff;
+padding:16px 20px;
+border-radius:50px;
+font-weight:bold;
+box-shadow:0 5px 20px rgba(255,0,0,0.3);
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#fff;
+display:flex;
+justify-content:space-around;
+padding:15px 0;
+box-shadow:0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.bottom-nav a{
+text-decoration:none;
+color:#243b63;
+font-weight:bold;
+font-size:15px;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.products{
+grid-template-columns:repeat(2,1fr);
+}
+
+.card img{
+height:110px;
+}
+
+.title{
+font-size:28px;
+}
+
+.package h4{
+font-size:19px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+<img src="logo.jpg">
+<h2>FFBazar24</h2>
+</div>
+
+<div class="wallet">
+0৳
+</div>
+
+</header>
+
+<h1 class="title">
+FREE FIRE
+</h1>
+
+<!-- TOPUP CATEGORIES -->
+
+<div class="products">
+
+<div class="card">
+<img src="bonus.jpg">
+<div class="card-content">
+<h3>Free Fire - 200 Like প্রতিদিন</h3>
+</div>
+</div>
+
+<div class="card">
+<img src="diamond1.jpg">
+<div class="card-content">
+<h3>UID TOPUP (BD)</h3>
+</div>
+</div>
+
+<div class="card">
+<img src="diamond2.jpg">
+<div class="card-content">
+<h3>LEVEL UP PASS</h3>
+</div>
+</div>
+
+<div class="card">
+<img src="diamond3.jpg">
+<div class="card-content">
+<h3>E-Badge/Evo Access</h3>
+</div>
+</div>
+
+<div class="card">
+<img src="diamond4.jpg">
+<div class="card-content">
+<h3>Weekly Lite (BD Server)</h3>
+</div>
+</div>
+
+<div class="card">
+<img src="diamond5.jpg">
+<div class="card-content">
+<h3>Weekly/Monthly Offer</h3>
+</div>
+</div>
+
+</div>
+
+<!-- PACKAGE SECTION -->
+
+<div class="package-box">
+
+<h2 class="package-title">
+Select Package
+</h2>
+
+<div class="package-grid">
+
+<div class="package">
+<h4>Weekly</h4>
+<p>BDT 158</p>
+</div>
+
+<div class="package">
+<h4>Monthly</h4>
+<p>BDT 790</p>
+</div>
+
+<div class="package">
+<h4>25 Diamond</h4>
+<p>BDT 22</p>
+</div>
+
+<div class="package">
+<h4>50 Diamond</h4>
+<p>BDT 36</p>
+</div>
+
+<div class="package">
+<h4>115 Diamond</h4>
+<p>BDT 79</p>
+</div>
+
+<div class="package">
+<h4>240 Diamond</h4>
+<p>BDT 158</p>
+</div>
+
+<div class="package">
+<h4>355 Diamond</h4>
+<p>BDT 237</p>
+</div>
+
+<div class="package">
+<h4>480 Diamond</h4>
+<p>BDT 316</p>
+</div>
+
+<div class="package">
+<h4>610 Diamond</h4>
+<p>BDT 400</p>
+</div>
+
+<div class="package">
+<h4>850 Diamond</h4>
+<p>BDT 558</p>
+</div>
+
+</div>
+
+</div>
+
+<!-- ACCOUNT INFO -->
+
+<div class="info-box">
+
+<h2 class="info-title">
+Account Info
+</h2>
+
+<input type="text" class="input-box" placeholder="এখানে গেমের আইডি কোড দিন">
+
+<input type="text" class="input-box" placeholder="আপনার নাম লিখুন">
+
+</div>
+
+<!-- PAYMENT -->
+
+<div class="info-box">
+
+<h2 class="info-title">
+Select one option
+</h2>
+
+<div class="payment-methods">
+
+<div class="method">
+bKash
+</div>
+
+<div class="method">
+Nagad
+</div>
+
+<div class="method">
+Rocket
+</div>
+
+</div>
+
+<button class="buy-btn" onclick="buyNow()">
+Buy Now
+</button>
+
+</div>
+
+<!-- RULES -->
+
+<div class="rules">
+
+<h3>
+Rules & Conditions
+</h3>
+
+<p>
+◎ শুধুমাত্র Bangladesh সার্ভারে ID Code দিয়ে টপ আপ হবে
+</p>
+
+<p>
+◎ Player ID ভুল দিলে Diamond না পেলে FFBazar24 কর্তৃপক্ষ দায়ী নয়
+</p>
+
+<p>
+◎ অর্ডার কমপ্লিট হওয়ার পরেও ডায়মন্ড না গেলে চেক করার জন্য ID Pass দিতে হবে
+</p>
+
+<p>
+◎ অর্ডার Cancel হলে কারণ অর্ডার হিস্টোরিতে দেখানো হবে
+</p>
+
+</div>
+
+<!-- HELP -->
+
+<div class="help-btn">
+সাহায্য লাগবে ?
+</div>
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+<a href="#">Home</a>
+
+<a href="#">Add Money</a>
+
+<a href="#">My Orders</a>
+
+<a href="#">My Codes</a>
+
+<a href="#">My Account</a>
+
+</div>
+
+<script>
+
+function buyNow(){
+
+alert("Order Submitted Successfully ❤️");
+
+}
+
+</script>
+
+</body>
+</html>
