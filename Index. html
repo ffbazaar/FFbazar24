@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Photo Editor Pro</title>
+<style>
+:root {
+  --bg: #0f0f12;
+  --card: rgba(255,255,255,0.05);
+  --orange: #ff7a00;
+  --purple: #8b5cf6;
+  --text: #fff;
+  --muted: #a1a1aa;
+}
+* {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif;}
+body {background:var(--bg); color:var(--text); min-height:100vh;}
+
+.header {display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:rgba(15,15,18,0.8); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100;}
+.logo {font-weight:800; font-size:20px; background:linear-gradient(90deg,var(--orange),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;}
+.user-box {display:flex; align-items:center; gap:10px;}
+.user-box img {width:35px; height:35px; border-radius:50%;}
+.btn {padding:8px 18px; background:linear-gradient(90deg,var(--orange),var(--purple)); border:none; border-radius:10px; color:#fff; font-weight:600; cursor:pointer;}
+.btn-sm {padding:6px 12px; font-size:13px;}
+
+.hero {text-align:center; padding:60px 20px 40px; background:linear-gradient(135deg, rgba(139,92,246,0.2), rgba(255,122,0,0.2));}
+.hero h1 {font-size:32px; margin-bottom:10px; background:linear-gradient(90deg,var(--orange),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;}
+.hero p {color:var(--muted); margin-bottom:25px;}
+
+.upload-area {max-width:700px; margin:30px auto; padding:30px; background:var(--card); backdrop-filter:blur(10px); border-radius:20px; border:1px solid rgba(255,255,255,0.1); text-align:center;}
+.upload-area.drag-over {border:2px dashed var(--orange);}
+.upload-area input {display:none;}
+
+.editor {display:none; max-width:1200px; margin:30px auto; padding:20px; gap:20px; grid-template-columns:1fr 300px;}
+@media(max-width:900px){.editor{grid-template-columns:1fr;}}
+.canvas-box {background:var(--card); border-radius:20px; padding:20px; backdrop-filter:blur(10px);}
+.canvas-box img {width:100%; border-radius:12px;}
+
+.tools {background:var(--card); border-radius:20px; padding:20px; backdrop-filter:blur(10px);}
+.tool-group {margin-bottom:20px;}
+.tool-group h4 {margin-bottom:10px; color:var(--orange);}
+.tool-group input[type="range"] {width:100%;}
+.tool-btn {width:100%; padding:10px; margin:5px 0; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; cursor:pointer;}
+.tool-btn:hover {background:var(--purple);}
+.tool-btn:disabled {opacity:0.5; cursor:not-allowed;}
+
+.filters {display:flex; gap:10px; overflow-x:auto; padding:10px 0;}
+.filter {min-width:80px; padding:10px; background:rgba(255,255,255,0.05); border-radius:10px; text-align:center; cursor:pointer; font-size:12px;}
+.filter:hover {background:var(--orange);}
+
+.history {margin-top:20px; max-height:200px; overflow-y:auto;}
+.history img {width:60px; height:60px; object-fit:cover; border-radius:8px; margin:5px; cursor:pointer;}
+
+.loader {display:none; text-align:center; padding:20px;}
+.modal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:999;}
+.modal-content {background:var(--card); padding:30px; border-radius:20px; width:90%; max-width:400px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">AI Photo Editor</div>
+  <div class="user-box" id="userBox">
+    <button class="btn btn-sm" onclick="showLogin()">Login</button>
+  </div>
+</div>
+
+<div class="hero" id="hero">
+  <h1>AI Photo Editor Pro</h1>
+  <p>Upload, Edit with AI, Save Cloud - Free Forever</p>
+  <button class="btn" onclick="document.getElementById('fileInput').click()">Upload Photo</button>
+</div>
+
+<div class="upload-area" id="uploadArea">
+  <input type="file" id="fileInput" accept="image/*">
+  <label for="fileInput">
+    <h3>📸 Drag & Drop or Click to Upload</h3>
+    <p>PNG, JPG Supported</p>
+  </label>
+</div>
+
+<div class="editor" id="editor">
+  <div class="canvas-box">
+    <img id="previewImg" alt="Preview">
+    <div class="loader" id="loader">AI Processing...</div>
+  </div>
+
+  <div class="tools">
+    <div class="tool-group">
+      <h4>Basic Adjust</h4>
+      Brightness <input type="range" id="brightness" min="0" max="200" value="100">
+      Contrast <input type="range" id="contrast" min="0" max="200" value="100">
+      Saturation <input type="range" id="saturation" min="0" max="200" value="100">
+      Blur <input type="range" id="blur" min="0" max="10" value="0">
+    </div>
+
+    <div class="tool-group">
+      <h4>AI Tools</h4>
+      <button class="tool-btn" id="removeBgBtn" onclick="removeBackground()">🤖 Remove Background</button>
+      <button class="tool-btn" id="saveBtn" onclick="saveToCloud()">☁️ Save to Cloud</button>
+    </div>
+
+    <div class="tool-group">
+      <h4>Filters</h4>
+      <div class="filters">
+        <div class="filter" onclick="applyFilter('none')">Normal</div>
+        <div class="filter" onclick="applyFilter('grayscale(100%)')">B&W</div>
+        <div class="filter" onclick="applyFilter('sepia(100%)')">Vintage</div>
+        <div class="filter" onclick="applyFilter('contrast(150%) saturate(120%)')">Cinematic</div>
+      </div>
+    </div>
+
+    <button class="btn" style="width:100%;" onclick="downloadImage()">Download HD</button>
+
+    <div class="history" id="history">
+      <h4>Saved Photos</h4>
+      <div id="historyList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="loginModal">
+  <div class="modal-content">
+    <h3>Login with Google</h3>
+    <button class="btn" style="width:100%;" onclick="loginWithGoogle()">Sign in with Google</button>
+    <button class="btn" style="width:100%; margin-top:10px; background:#555;" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// 🔥 STEP 1: Firebase Config - এখানে তোমার Firebase config বসাও
+const firebaseConfig = {
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let originalFile = null;
+let editedBlob = null;
+
+const fileInput = document.getElementById('fileInput');
+const previewImg = document.getElementById('previewImg');
+const editor = document.getElementById('editor');
+const hero = document.getElementById('hero');
+const uploadArea = document.getElementById('uploadArea');
+const loader = document.getElementById('loader');
+const removeBgBtn = document.getElementById('removeBgBtn');
+const saveBtn = document.getElementById('saveBtn');
+
+// 🔥 STEP 2: Cloudinary Config - এখানে বসাও
+const CLOUD_NAME = "YOUR_CLOUD_NAME";
+const UPLOAD_PRESET = "YOUR_UNSIGNED_PRESET";
+
+// 🔥 STEP 3: Hugging Face Token - এখানে বসাও
+const HF_TOKEN = "hf_YOUR_TOKEN_HERE";
+
+// Auth Functions
+window.loginWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    currentUser = result.user;
+    updateUserUI();
+    loadHistory();
+    closeModal();
+  } catch(e) {alert(e.message);}
+}
+
+window.logout = () => {
+  signOut(auth);
+  currentUser = null;
+  updateUserUI();
+}
+
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  updateUserUI();
+  if(user) loadHistory();
+});
+
+function updateUserUI(){
+  const userBox = document.getElementById('userBox');
+  if(currentUser){
+    userBox.innerHTML = `
+      <img src="${currentUser.photoURL}" alt="">
+      <span>${currentUser.displayName.split(' ')[0]}</span>
+      <button class="btn btn-sm" onclick="logout()">Logout</button>
+    `;
+  } else {
+    userBox.innerHTML = `<button class="btn btn-sm" onclick="showLogin()">Login</button>`;
+  }
+}
+
+window.showLogin = () => document.getElementById('loginModal').style.display = 'flex';
+window.closeModal = () => document.getElementById('loginModal').style.display = 'none';
+
+// File Upload
+fileInput.onchange = (e) => {
+  originalFile = e.target.files[0];
+  if(originalFile){
+    previewImg.src = URL.createObjectURL(originalFile);
+    editedBlob = null;
+    hero.style.display = 'none';
+    uploadArea.style.display = 'none';
+    editor.style.display = 'grid';
+  }
+}
+
+uploadArea.ondragover = (e) => {e.preventDefault(); uploadArea.classList.add('drag-over');}
+uploadArea.ondragleave = () => uploadArea.classList.remove('drag-over');
+uploadArea.ondrop = (e) => {
+  e.preventDefault();
+  uploadArea.classList.remove('drag-over');
+  originalFile = e.dataTransfer.files[0];
+  previewImg.src = URL.createObjectURL(originalFile);
+  editedBlob = null;
+  hero.style.display = 'none';
+  uploadArea.style.display = 'none';
+  editor.style.display = 'grid';
+}
+
+// Basic Adjust
+['brightness','contrast','saturation','blur'].forEach(id => {
+  document.getElementById(id).oninput = () => {
+    const b = document.getElementById('brightness').value;
+    const c = document.getElementById('contrast').value;
+    const s = document.getElementById('saturation').value;
+    const bl = document.getElementById('blur').value;
+    previewImg.style.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%) blur(${bl}px)`;
+  }
+});
+
+window.applyFilter = function(filter){
+  previewImg.style.filter = filter;
+}
+
+// AI Background Remove
+window.removeBackground = async function(){
+  if(!originalFile) return alert('Upload a photo first');
+  loader.style.display = 'block';
+  removeBgBtn.disabled = true;
+
+  const formData = new FormData();
+  formData.append('image', originalFile);
+
+  try{
+    const res = await fetch('https://api-inference.huggingface.co/models/briaai/RMBG-1.4',{
+      method:'POST',
+      headers:{'Authorization':'Bearer ' + HF_TOKEN},
+      body:formData
+    });
+
+    if(!res.ok) throw new Error('API Error');
+
+    editedBlob = await res.blob();
+    previewImg.src = URL.createObjectURL(editedBlob);
+  }catch(e){
+    alert('Error: ' + e.message + '\nCheck your Hugging Face token');
+  }
+  loader.style.display = 'none';
+  removeBgBtn.disabled = false;
+}
+
+// Save to Cloudinary
+window.saveToCloud = async () => {
+  if(!currentUser) return alert('Login first');
+  if(!originalFile &&!editedBlob) return alert('Upload a photo first');
+
+  loader.style.display = 'block';
+  saveBtn.disabled = true;
+
+  // Convert blob to file if needed
+  const fileToUpload = editedBlob || originalFile;
+
+  const formData = new FormData();
+  formData.append('file', fileToUpload);
+  formData.append('upload_preset', UPLOAD_PRESET);
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+
+    if(data.error) throw new Error(data.error.message);
+
+    let history = JSON.parse(localStorage.getItem('history_'+currentUser.uid) || '[]');
+    history.unshift(data.secure_url);
+    localStorage.setItem('history_'+currentUser.uid, JSON.stringify(history.slice(0,20)));
+
+    loadHistory();
+    alert('Saved to Cloud!');
+  } catch(e){
+    alert('Error: ' + e.message + '\nCheck Cloudinary settings');
+  }
+  loader.style.display = 'none';
+  saveBtn.disabled = false;
+}
+
+function loadHistory(){
+  if(!currentUser) return;
+  const history = JSON.parse(localStorage.getItem('history_'+currentUser.uid) || '[]');
+  const list = document.getElementById('historyList');
+  list.innerHTML = history.map(url => `<img src="${url}" onclick="previewImg.src='${url}'">`).join('');
+}
+
+// Download
+window.downloadImage = function(){
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    ctx.filter = previewImg.style.filter;
+    ctx.drawImage(img,0,0);
+
+    const link = document.createElement('a');
+    link.download = 'edited.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+  img.src = previewImg.src;
+}
+</script>
+</body>
+</html>
