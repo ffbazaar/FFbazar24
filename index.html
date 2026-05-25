@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CapCut Web Clone</title>
+<style>
+* {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif;}
+body {background:#0a0a0f; color:#fff; overflow:hidden;}
+
+/* Layout */
+.container {display:flex; flex-direction:column; height:100vh;}
+.topbar {height:60px; background:#1a1a1f; display:flex; align-items:center; padding:0 20px; justify-content:space-between; border-bottom:1px solid #2a2a2f;}
+.logo {font-size:22px; font-weight:700; background:linear-gradient(90deg,#ff7a00,#8b5cf6); -webkit-background-clip:text; -webkit-text-fill-color:transparent;}
+.topbar button {background:linear-gradient(90deg,#ff7a00,#8b5cf6); border:none; padding:8px 20px; border-radius:8px; color:#fff; font-weight:600; cursor:pointer;}
+
+.main {flex:1; display:flex; flex-direction:column;}
+.preview-area {flex:1; background:#000; display:flex; align-items:center; justify-content:center; position:relative;}
+.preview-area video,.preview-area canvas {max-width:100%; max-height:100%;}
+
+.timeline-area {height:200px; background:#1a1a1f; border-top:1px solid #2a2a2f; display:flex; flex-direction:column;}
+.timeline-header {height:40px; background:#222; display:flex; align-items:center; padding:0 15px; gap:15px; overflow-x:auto;}
+.timeline-header button {background:#333; border:none; padding:6px 12px; border-radius:6px; color:#fff; cursor:pointer; white-space:nowrap;}
+.timeline-header button:hover {background:#ff7a00;}
+.timeline-track {flex:1; background:#111; overflow-x:auto; padding:10px; display:flex; gap:5px;}
+.clip {height:60px; background:linear-gradient(90deg,#ff7a00,#8b5cf6); border-radius:6px; min-width:120px; position:relative; cursor:move;}
+.clip span {position:absolute; bottom:2px; left:4px; font-size:11px; background:rgba(0,0,0,0.6); padding:2px 4px; border-radius:3px;}
+
+.tools-panel {position:absolute; bottom:210px; left:50%; transform:translateX(-50%); background:#1a1a1f; padding:10px 15px; border-radius:12px; display:flex; gap:10px; border:1px solid #2a2a2f;}
+.tools-panel button {background:#333; border:none; padding:8px 15px; border-radius:8px; color:#fff; cursor:pointer;}
+.tools-panel button:hover {background:#8b5cf6;}
+
+.loader {position:absolute; inset:0; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; flex-direction:column; gap:10px;}
+.spinner {width:40px; height:40px; border:3px solid #333; border-top:3px solid #ff7a00; border-radius:50%; animation:spin 1s linear infinite;}
+@keyframes spin {0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+</style>
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/ffmpeg.min.js"></script>
+</head>
+<body>
+<div class="container">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="logo">CapCut Web</div>
+    <div>
+      <input type="file" id="fileInput" accept="video/*,image/*" multiple hidden>
+      <button onclick="document.getElementById('fileInput').click()">+ New Project</button>
+      <button onclick="exportVideo()">Export</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Preview -->
+    <div class="preview-area">
+      <video id="preview" controls></video>
+      <canvas id="canvas" style="display:none;"></canvas>
+      <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p id="loaderText">Processing...</p>
+      </div>
+
+      <!-- Bottom Tools Bar -->
+      <div class="tools-panel">
+        <button onclick="applyFilter('none')">Normal</button>
+        <button onclick="applyFilter('grayscale')">B&W</button>
+        <button onclick="applyFilter('sepia')">Vintage</button>
+        <button onclick="applyFilter('cinematic')">Cinematic</button>
+        <button onclick="trimClip()">✂️ Trim</button>
+        <button onclick="splitClip()">✂️ Split</button>
+        <button onclick="addText()">T Text</button>
+        <button onclick="removeBackground()">🤖 BG Remove</button>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-area">
+      <div class="timeline-header">
+        <button onclick="addClip()">+ Add Clip</button>
+        <button onclick="addAudio()">🎵 Audio</button>
+        <button onclick="addTransition()">➡️ Transition</button>
+        <button onclick="addEffect()">✨ Effect</button>
+        <button onclick="addFilter()">🎨 Filter</button>
+        <button onclick="addText()">T Text</button>
+        <button onclick="addSticker()">😀 Sticker</button>
+      </div>
+      <div class="timeline-track" id="timelineTrack">
+        <p style="color:#666; margin:auto;">Drag clips here to start editing</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const { FFmpeg } = FFmpegWASM;
+const ffmpeg = new FFmpeg();
+let loaded = false;
+let clips = [];
+let currentClip = null;
+
+const fileInput = document.getElementById('fileInput');
+const preview = document.getElementById('preview');
+const canvas = document.getElementById('canvas');
+const timelineTrack = document.getElementById('timelineTrack');
+const loader = document.getElementById('loader');
+const loaderText = document.getElementById('loaderText');
+
+// Load FFmpeg
+async function loadFFmpeg(){
+  if(loaded) return;
+  showLoader('Loading Engine...');
+  await ffmpeg.load();
+  loaded = true;
+  hideLoader();
+}
+
+// File Upload
+fileInput.onchange = (e) => {
+  const files = Array.from(e.target.files);
+  files.forEach(file => addClipToTimeline(file));
+}
+
+// Add Clip to Timeline
+function addClipToTimeline(file){
+  const url = URL.createObjectURL(file);
+  const clip = {file, url, type: file.type.startsWith('video')?'video':'image'};
+
+  clips.push(clip);
+
+  const clipDiv = document.createElement('div');
+  clipDiv.className = 'clip';
+  clipDiv.innerHTML = `<span>${file.name.slice(0,15)}</span>`;
+  clipDiv.onclick = () => loadClip(clip);
+
+  if(timelineTrack.querySelector('p')) timelineTrack.innerHTML = '';
+  timelineTrack.appendChild(clipDiv);
+
+  if(clips.length === 1) loadClip(clip);
+}
+
+function loadClip(clip){
+  currentClip = clip;
+  if(clip.type === 'video'){
+    preview.src = clip.url;
+    preview.style.display = 'block';
+    canvas.style.display = 'none';
+  } else {
+    const img = new Image();
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+    }
+    img.src = clip.url;
+    preview.style.display = 'none';
+    canvas.style.display = 'block';
+  }
+}
+
+// Filters
+function applyFilter(filter){
+  let css = '';
+  switch(filter){
+    case 'grayscale': css = 'grayscale(100%)'; break;
+    case 'sepia': css = 'sepia(100%)'; break;
+    case 'cinematic': css = 'contrast(120%) saturate(110%) sepia(10%)'; break;
+    default: css = 'none';
+  }
+  preview.style.filter = css;
+  canvas.style.filter = css;
+}
+
+// AI Background Remove
+async function removeBackground(){
+  if(!currentClip) return alert('Select a clip first');
+  showLoader('Removing Background...');
+
+  await loadFFmpeg();
+  await ffmpeg.writeFile('input.mp4', await fetchFile(currentClip.file));
+  await ffmpeg.exec(['-i','input.mp4','-vf','format=rgba','-c:v','qtrle','output.mov']);
+
+  const data = await ffmpeg.readFile('output.mov');
+  const url = URL.createObjectURL(new Blob([data.buffer],{type:'video/quicktime'}));
+  preview.src = url;
+
+  hideLoader();
+}
+
+// Export Video
+async function exportVideo(){
+  if(clips.length === 0) return alert('Add a clip first');
+
+  await loadFFmpeg();
+  showLoader('Exporting... This takes 1-2 min');
+
+  await ffmpeg.writeFile('input.mp4', await fetchFile(clips[0].file));
+  await ffmpeg.exec(['-i','input.mp4','-c:v','libx264','-preset','fast','output.mp4']);
+
+  const data = await ffmpeg.readFile('output.mp4');
+  const url = URL.createObjectURL(new Blob([data.buffer],{type:'video/mp4'}));
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'edited_video.mp4';
+  a.click();
+
+  hideLoader();
+}
+
+// Helper Functions
+async function fetchFile(file){
+  return new Uint8Array(await file.arrayBuffer());
+}
+
+function showLoader(text){
+  loader.style.display = 'flex';
+  loaderText.textContent = text;
+}
+
+function hideLoader(){
+  loader.style.display = 'none';
+}
+
+// Placeholder Functions - এগুলা পরে ফুল ইমপ্লিমেন্ট করবো
+function trimClip(){alert('Trim tool: Select start/end time')}
+function splitClip(){alert('Split tool: Split at current position')}
+function addText(){alert('Text tool: Add animated text')}
+function addClip(){alert('Select files to add')}
+function addAudio(){alert('Add background music')}
+function addTransition(){alert('Add transitions between clips')}
+function addEffect(){alert('Add glitch, blur, shake effects')}
+function addFilter(){alert('Add color filters')}
+function addSticker(){alert('Add animated stickers')}
+</script>
+</body>
+</html>
