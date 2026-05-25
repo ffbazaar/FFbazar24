@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Edit Pro</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#0f0f1a;
+color:white;
+}
+
+header{
+padding:20px;
+background:linear-gradient(90deg,#6a00ff,#00bfff);
+text-align:center;
+font-size:28px;
+font-weight:bold;
+}
+
+.container{
+padding:15px;
+}
+
+.card{
+background:#1b1b2f;
+padding:20px;
+border-radius:20px;
+margin-bottom:20px;
+box-shadow:0 0 15px rgba(0,0,0,0.4);
+}
+
+h2{
+margin-bottom:10px;
+}
+
+button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:15px;
+background:linear-gradient(90deg,#8a2be2,#00bfff);
+color:white;
+font-size:16px;
+margin-top:10px;
+cursor:pointer;
+}
+
+input,textarea,select{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:12px;
+background:#2c2c44;
+color:white;
+}
+
+.tools{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+margin-top:15px;
+}
+
+.tool{
+background:#2b2b45;
+padding:15px;
+text-align:center;
+border-radius:15px;
+}
+
+.preview{
+height:220px;
+background:#2c2c44;
+border-radius:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:18px;
+margin-top:15px;
+overflow:hidden;
+}
+
+.preview img,
+.preview video{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.status{
+margin-top:10px;
+font-size:14px;
+color:#00ffcc;
+}
+
+footer{
+text-align:center;
+padding:20px;
+color:#aaa;
+}
+</style>
+</head>
+<body>
+
+<header>
+AI Edit Pro
+</header>
+
+<div class="container">
+
+<div class="card">
+<h2>AI Prompt Edit</h2>
+<textarea id="prompt" placeholder="Type prompt... Example: Cinematic orange sunset edit"></textarea>
+<button onclick="generateEdit()">Generate AI Edit</button>
+<div class="status" id="aiStatus"></div>
+</div>
+
+<div class="card">
+<h2>Upload Photo / Video</h2>
+<input type="file" id="fileInput" accept="image/*,video/*">
+<div class="preview" id="previewArea">
+Preview Area
+</div>
+</div>
+
+<div class="card">
+<h2>AI Voice Generator</h2>
+<textarea id="voiceText" placeholder="Write text for AI voice"></textarea>
+<select id="voiceSelect">
+<option>Google US English</option>
+<option>Google UK English Female</option>
+<option>Google हिन्दी</option>
+</select>
+<button onclick="speakVoice()">Generate AI Voice</button>
+</div>
+
+<div class="card">
+<h2>Editing Tools</h2>
+<div class="tools">
+<div class="tool" onclick="toolAction('Blur Effect Added')">Blur</div>
+<div class="tool" onclick="toolAction('Glow Effect Added')">Glow</div>
+<div class="tool" onclick="toolAction('Cinematic Filter Added')">Cinematic</div>
+<div class="tool" onclick="toolAction('AI Enhance Activated')">AI Enhance</div>
+<div class="tool" onclick="toolAction('Background Removed')">Background Remove</div>
+<div class="tool" onclick="toolAction('Subtitle Generated')">Auto Subtitle</div>
+<div class="tool" onclick="toolAction('Speed Changed')">Speed</div>
+<div class="tool" onclick="toolAction('Music Synced')">Music Sync</div>
+</div>
+</div>
+
+<div class="card">
+<h2>Templates</h2>
+<button onclick="templateLoad('Gaming Edit Loaded')">Gaming Edit</button>
+<button onclick="templateLoad('TikTok Reel Loaded')">TikTok Reel</button>
+<button onclick="templateLoad('Anime Style Loaded')">Anime Style</button>
+<button onclick="templateLoad('Velocity Edit Loaded')">Velocity Edit</button>
+</div>
+
+<div class="card">
+<h2>Export Video</h2>
+<button onclick="exportVideo('720p Export Ready')">Export 720p</button>
+<button onclick="exportVideo('1080p Export Ready')">Export 1080p</button>
+<button onclick="exportVideo('4K Export Ready')">Export 4K</button>
+</div>
+
+</div>
+
+<footer>
+Made For GitHub Hosting
+</footer>
+
+<script>
+const fileInput = document.getElementById('fileInput');
+const previewArea = document.getElementById('previewArea');
+
+fileInput.addEventListener('change', function(){
+const file = this.files[0];
+if(!file) return;
+
+const url = URL.createObjectURL(file);
+
+if(file.type.startsWith('image/')){
+previewArea.innerHTML = `<img src="${url}">`;
+}else if(file.type.startsWith('video/')){
+previewArea.innerHTML = `<video src="${url}" controls autoplay></video>`;
+}
+});
+
+function generateEdit(){
+const prompt = document.getElementById('prompt').value;
+document.getElementById('aiStatus').innerText = 'AI Processing: ' + prompt;
+}
+
+function toolAction(text){
+alert(text);
+}
+
+function templateLoad(text){
+alert(text);
+}
+
+function exportVideo(text){
+alert(text);
+}
+
+function speakVoice(){
+const text = document.getElementById('voiceText').value;
+const speech = new SpeechSynthesisUtterance(text);
+window.speechSynthesis.speak(speech);
+}
+</script>
+
+</body>
+</html>
