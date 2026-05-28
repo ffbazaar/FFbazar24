@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FF Diamond Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f2f8;
+  --white:#ffffff;
+  --purple:#6a0dad;
+  --purple2:#9b30ff;
+  --purple-light:#f3eeff;
+  --purple-border:#d4b3ff;
+  --gold:#ffd700;
+  --orange:#ff6a00;
+  --fire:#ff3c00;
+  --text:#1a1a2e;
+  --muted:#777799;
+  --green:#00a86b;
+  --card-dark:#13132a;
+  --bkash:#e2136e;
+  --nagad:#e2231a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Hind Siliguri',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* ===== HEADER ===== */
+.header{
+  background:#fff;
+  border-bottom:1px solid #e0e0f0;
+  padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 12px rgba(106,13,173,0.08);
+}
+.logo-area{display:flex;align-items:center;gap:10px}
+.logo-flame{font-size:30px;filter:drop-shadow(0 0 8px #ff3c00)}
+.logo-text{font-family:'Orbitron',sans-serif;font-size:clamp(13px,3.5vw,18px);font-weight:900;background:linear-gradient(135deg,#ffd700,#ff6a00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px}
+.logo-sub{font-size:9px;color:var(--purple2);letter-spacing:3px;font-family:'Rajdhani',sans-serif;font-weight:600;text-transform:uppercase;margin-top:1px}
+.header-right{display:flex;align-items:center;gap:10px}
+.wallet-btn{background:var(--purple);color:#fff;padding:7px 14px;border-radius:30px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px;cursor:pointer;border:none}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff3c00,#ff6a00);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:#fff}
+
+/* ===== PAGES ===== */
+.page{display:none;min-height:calc(100vh - 120px)}
+.page.active{display:block}
+
+/* ===== HOME PAGE ===== */
+.home-title{text-align:center;padding:20px 16px 14px;font-family:'Orbitron',sans-serif;font-size:clamp(18px,5vw,28px);font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,#ff3c00,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase}
+.home-main{max-width:900px;margin:0 auto;padding:0 14px 80px}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:380px){.cat-grid{gap:8px}}
+
+.cat-card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e8e0f8;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 2px 8px rgba(106,13,173,0.06);animation:fadeUp .4s ease both}
+.cat-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(106,13,173,0.18)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.cat-card:nth-child(1){animation-delay:.05s}.cat-card:nth-child(2){animation-delay:.1s}.cat-card:nth-child(3){animation-delay:.15s}
+.cat-card:nth-child(4){animation-delay:.2s}.cat-card:nth-child(5){animation-delay:.25s}.cat-card:nth-child(6){animation-delay:.3s}.cat-card:nth-child(7){animation-delay:.35s}
+
+.cat-thumb{width:100%;aspect-ratio:1/1;display:block}
+.cat-label{padding:7px 8px 9px;text-align:center;font-size:clamp(10px,2.4vw,12px);font-weight:700;color:#1a1a2e;line-height:1.3}
+.cat-label small{display:block;font-size:10px;color:var(--purple2);font-weight:500;margin-top:1px}
+
+/* ===== ORDER PAGE ===== */
+.order-page{background:var(--bg);padding-bottom:90px}
+
+.order-header{
+  background:#fff;padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid #e8e0f8;
+  position:sticky;top:56px;z-index:100;
+}
+.back-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text);line-height:1;padding:0 4px}
+.order-header-info h2{font-size:clamp(14px,3.5vw,18px);font-weight:700;color:var(--text)}
+.order-header-info p{font-size:11px;color:var(--muted);margin-top:1px}
+
+.product-banner{
+  background:#fff;margin:12px;border-radius:14px;
+  padding:14px;display:flex;align-items:center;gap:14px;
+  border:1px solid #e8e0f8;box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.product-banner svg{width:80px;height:80px;flex-shrink:0;border-radius:10px}
+.product-banner h3{font-size:clamp(14px,3.5vw,17px);font-weight:700;color:var(--text);margin-bottom:4px}
+.product-banner p{font-size:12px;color:var(--muted)}
+
+.step-section{background:#fff;margin:0 12px 12px;border-radius:14px;overflow:hidden;border:1px solid #e8e0f8;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+.step-header{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0eaff}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;font-family:'Orbitron',sans-serif;flex-shrink:0}
+.step-title{font-size:clamp(15px,3.5vw,17px);font-weight:700;color:var(--text)}
+.step-body{padding:14px 16px}
+
+.recharge-grid{display:flex;flex-direction:column;gap:10px}
+.recharge-pill{
+  border:2px solid #e0d0ff;border-radius:12px;padding:14px 16px;cursor:pointer;
+  transition:all .2s;background:#fff;
+}
+.recharge-pill:hover{border-color:var(--purple2);background:var(--purple-light)}
+.recharge-pill.selected{border-color:var(--purple);background:var(--purple-light)}
+.recharge-pill .rp-name{font-size:clamp(13px,3vw,15px);font-weight:700;color:var(--purple);margin-bottom:2px}
+.recharge-pill .rp-desc{font-size:12px;color:var(--muted)}
+.recharge-pill .rp-price{font-size:clamp(14px,3.5vw,17px);font-weight:700;color:var(--purple);margin-top:4px}
+
+.recharge-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.recharge-pill-sm{
+  border:2px solid #e0d0ff;border-radius:12px;padding:12px 10px;cursor:pointer;
+  transition:all .2s;background:#fff;text-align:center;
+}
+.recharge-pill-sm:hover{border-color:var(--purple2);background:var(--purple-light)}
+.recharge-pill-sm.selected{border-color:var(--purple);background:var(--purple-light)}
+.recharge-pill-sm .rp-name{font-size:clamp(11px,2.5vw,13px);font-weight:700;color:var(--purple);margin-bottom:3px;line-height:1.3}
+.recharge-pill-sm .rp-price{font-size:clamp(14px,3.5vw,18px);font-weight:900;color:var(--purple);font-family:'Orbitron',sans-serif}
+.recharge-pill-sm .rp-price span{font-size:11px}
+.hot-tag{display:inline-block;background:linear-gradient(135deg,#ff3c00,#ff6a00);color:#fff;font-size:9px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:1px 7px;border-radius:8px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+
+.input-label{font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:500}
+.player-input{
+  width:100%;border:2px solid #e0d0ff;border-radius:12px;
+  padding:14px 16px;font-size:15px;font-family:'Hind Siliguri',sans-serif;
+  color:var(--text);outline:none;transition:border-color .2s;background:#fff;
+}
+.player-input:focus{border-color:var(--purple2)}
+.player-input::placeholder{color:#bbb}
+
+.payment-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pay-option{
+  border:2px solid #e0d0ff;border-radius:12px;padding:16px 12px;
+  cursor:pointer;transition:all .2s;background:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:90px;position:relative;overflow:hidden;
+}
+.pay-option:hover{border-color:var(--purple2);background:var(--purple-light)}
+.pay-option.selected{border-color:var(--purple)}
+.pay-option.selected::after{content:'✓';position:absolute;top:6px;right:8px;background:var(--purple);color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;line-height:18px;text-align:center}
+.pay-logo{font-size:28px;margin-bottom:6px}
+.pay-name{font-size:12px;font-weight:700;color:var(--text);text-align:center;font-family:'Hind Siliguri',sans-serif}
+.pay-name-bn{font-size:13px;font-weight:700;color:var(--purple);font-family:'Hind Siliguri',sans-serif;margin-bottom:2px}
+.pay-icons{display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:center}
+.pay-icon-chip{background:#f5f0ff;border:1px solid #d4b3ff;border-radius:6px;padding:3px 7px;font-size:10px;font-weight:700;color:var(--purple)}
+
+.order-btn-wrap{padding:0 12px;margin-top:4px}
+.order-btn{
+  width:100%;padding:16px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,var(--purple),var(--purple2));
+  color:#fff;font-family:'Hind Siliguri',sans-serif;font-size:17px;font-weight:700;
+  cursor:pointer;transition:opacity .2s,transform .1s;
+  box-shadow:0 4px 18px rgba(106,13,173,0.35);letter-spacing:1px;
+}
+.order-btn:hover{opacity:0.9}
+.order-btn:active{transform:scale(0.98)}
+
+/* ===== BOTTOM NAV ===== */
+.bottomnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  background:#fff;border-top:1px solid #e8e0f8;
+  display:flex;justify-content:space-around;align-items:center;
+  padding:7px 0 10px;box-shadow:0 -2px 12px rgba(0,0,0,0.06);
+}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.5px;color:#aaa;cursor:pointer;transition:color .2s;padding:0 6px}
+.bnav-item.active{color:var(--purple)}
+.bnav-item svg{width:20px;height:20px}
+
+.help-btn{position:fixed;bottom:68px;right:14px;z-index:250;background:linear-gradient(135deg,#ff3c00,#ff6a00);color:#fff;border:none;border-radius:30px;padding:10px 16px;font-family:'Hind Siliguri',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(255,60,0,0.4)}
+
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:#1a1a2e;color:#fff;padding:12px 24px;border-radius:30px;font-size:14px;font-weight:600;opacity:0;transition:all .3s;z-index:400;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== PAYMENT GATEWAY MODAL ===== */
+.pay-modal-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(10,5,30,0.6);backdrop-filter:blur(4px);
+  align-items:flex-end;justify-content:center;
+}
+.pay-modal-overlay.open{display:flex;animation:overlayIn .25s ease}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+
+.pay-modal{
+  background:#f0f4ff;width:100%;max-width:480px;
+  border-radius:20px 20px 0 0;
+  animation:slideUp .3s cubic-bezier(.2,.8,.3,1);
+  overflow:hidden;
+  max-height:92vh;overflow-y:auto;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+.pay-modal-top{
+  background:#fff;padding:16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid #e8e0f8;
+}
+.pay-modal-title{font-size:16px;font-weight:700;color:var(--text)}
+.pay-modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#888;line-height:1}
+
+/* Payment method selector inside modal */
+.pay-method-selector{
+  background:#fff;margin:12px;border-radius:14px;overflow:hidden;
+  border:1px solid #e8e0f8;
+}
+.pay-method-header{
+  padding:14px 16px;background:#f8f5ff;
+  font-size:14px;font-weight:700;color:var(--purple);
+  border-bottom:1px solid #ede0ff;
+}
+.pay-method-options{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.pay-method-btn{
+  padding:20px 12px;display:flex;flex-direction:column;align-items:center;
+  gap:8px;cursor:pointer;border:none;background:#fff;
+  transition:background .2s;border-right:1px solid #f0eaff;
+}
+.pay-method-btn:last-child{border-right:none}
+.pay-method-btn:hover{background:#faf5ff}
+.pay-method-btn.active-method{background:#f3eeff;}
+
+.bkash-logo-svg{width:90px;height:36px}
+.nagad-logo-svg{width:90px;height:36px}
+
+/* Payment instruction panel */
+.pay-instruction{display:none;margin:0 12px 12px;border-radius:14px;overflow:hidden}
+.pay-instruction.show{display:block;animation:fadeUp .3s ease}
+
+.pay-inst-header{
+  padding:16px;text-align:center;
+  font-size:17px;font-weight:700;color:#fff;
+  font-family:'Hind Siliguri',sans-serif;
+}
+.bkash-inst .pay-inst-header{background:var(--bkash)}
+.nagad-inst .pay-inst-header{background:var(--nagad)}
+
+.pay-amount-badge{
+  display:inline-block;background:rgba(255,255,255,0.2);
+  border-radius:30px;padding:4px 16px;font-size:22px;font-weight:900;
+  margin-top:6px;font-family:'Orbitron',sans-serif;
+}
+
+.pay-inst-body{padding:16px;}
+.bkash-inst .pay-inst-body{background:#fce8f0}
+.nagad-inst .pay-inst-body{background:#fce8e8}
+
+.pay-inst-step{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.07);
+  font-size:14px;color:#1a1a2e;font-family:'Hind Siliguri',sans-serif;line-height:1.5;
+}
+.pay-inst-step:last-of-type{border-bottom:none}
+.pay-bullet{
+  width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0;
+}
+.bkash-inst .pay-bullet{background:var(--bkash)}
+.nagad-inst .pay-bullet{background:var(--nagad)}
+
+.pay-inst-step strong{font-weight:700}
+.pay-num{font-size:16px;font-weight:900;letter-spacing:.5px}
+.bkash-inst .pay-num{color:var(--bkash)}
+.nagad-inst .pay-num{color:var(--nagad)}
+
+.copy-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#fff;border:1.5px solid currentColor;
+  border-radius:8px;padding:3px 10px;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:'Hind Siliguri',sans-serif;
+  margin-left:6px;vertical-align:middle;
+}
+.bkash-inst .copy-btn{color:var(--bkash)}
+.nagad-inst .copy-btn{color:var(--nagad)}
+
+.tx-input-wrap{padding:0 16px 8px;}
+.bkash-inst .tx-input-wrap{background:#fce8f0}
+.nagad-inst .tx-input-wrap{background:#fce8e8}
+
+.tx-input{
+  width:100%;border:2px solid rgba(0,0,0,0.12);border-radius:12px;
+  padding:13px 16px;font-size:15px;font-family:'Hind Siliguri',sans-serif;
+  color:var(--text);outline:none;background:#fff;
+  transition:border-color .2s;
+}
+.bkash-inst .tx-input:focus{border-color:var(--bkash)}
+.nagad-inst .tx-input:focus{border-color:var(--nagad)}
+.tx-input::placeholder{color:#bbb}
+
+.verify-btn{
+  width:100%;padding:16px;border:none;border-radius:0 0 14px 14px;
+  color:#fff;font-family:'Hind Siliguri',sans-serif;font-size:17px;font-weight:700;
+  cursor:pointer;letter-spacing:1px;transition:opacity .2s;
+}
+.bkash-inst .verify-btn{background:var(--bkash)}
+.nagad-inst .verify-btn{background:var(--nagad)}
+.verify-btn:hover{opacity:0.88}
+.verify-btn:active{transform:scale(0.98)}
+
+/* Amount display in modal top */
+.modal-amount-bar{
+  background:#fff;margin:0 12px 12px;border-radius:12px;
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+  border:1px solid #e8e0f8;
+}
+.modal-amount-label{font-size:13px;color:var(--muted);font-weight:500}
+.modal-amount-val{font-size:20px;font-weight:900;color:var(--text);font-family:'Orbitron',sans-serif}
+.modal-amount-val span{font-size:13px;color:var(--muted);font-weight:500;margin-left:2px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-area">
+    <div class="logo-flame">🔥</div>
+    <div>
+      <div class="logo-text">FF STORE</div>
+      <div class="logo-sub">Diamond TopUp BD</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="wallet-btn">💰 0৳</button>
+    <div class="avatar">F</div>
+  </div>
+</div>
+
+<!-- ============ HOME PAGE ============ -->
+<div class="page active" id="page-home">
+  <div class="home-title">FREE FIRE</div>
+  <div class="home-main">
+    <div class="cat-grid">
+
+      <!-- 1. 200 Like -->
+      <div class="cat-card" onclick="openOrder('like')">
+        <svg class="cat-thumb" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="bg1" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#2a0a5e"/><stop offset="100%" stop-color="#0d0820"/></radialGradient><filter id="g1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect width="200" height="200" fill="url(#bg1)"/>
+          <circle cx="100" cy="90" r="62" fill="rgba(255,50,0,0.12)"/>
+          <ellipse cx="100" cy="82" rx="24" ry="28" fill="#cc2244" opacity="0.9"/>
+          <circle cx="100" cy="62" r="18" fill="#e8385a"/>
+          <polygon points="84,58 100,34 116,58" fill="#cc0033"/>
+          <rect x="82" y="56" width="36" height="5" fill="#cc0033" rx="2"/>
+          <rect x="20" y="22" width="68" height="20" fill="rgba(0,0,0,0.55)" rx="10"/>
+          <text x="54" y="36" text-anchor="middle" font-family="Arial" font-size="10" font-weight="bold" fill="#4ade80">👍 99999</text>
+          <rect x="112" y="22" width="68" height="20" fill="rgba(0,0,0,0.55)" rx="10"/>
+          <text x="146" y="36" text-anchor="middle" font-family="Arial" font-size="10" font-weight="bold" fill="#4ade80">👍 99999</text>
+          <text x="100" y="122" text-anchor="middle" font-family="sans-serif" font-size="11" fill="rgba(255,255,255,0.65)">১ দিনে ১ আইডিতে ১ বার</text>
+          <text x="100" y="150" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="bold" fill="#ffd700" filter="url(#g1)">২০০ লাইক</text>
+          <text x="100" y="172" text-anchor="middle" font-family="sans-serif" font-size="17" font-weight="bold" fill="#ff7070">❤ প্রতিদিন ❤</text>
+          <rect x="158" y="5" width="36" height="17" fill="#6a0dad" rx="4" opacity="0.85"/>
+          <text x="176" y="17" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="white">STORE</text>
+        </svg>
+        <div class="cat-label">Free Fire – 200 Like<small>প্রতিদিন</small></div>
+      </div>
+
+      <!-- 2. UID TOPUP -->
+      <div class="cat-card" onclick="openOrder('uid')">
+        <svg class="cat-thumb" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="bg2" cx="40%" cy="40%" r="70%"><stop offset="0%" stop-color="#1e0a50"/><stop offset="100%" stop-color="#0a0820"/></radialGradient><filter id="g2"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect width="200" height="200" fill="url(#bg2)"/>
+          <circle cx="100" cy="85" r="65" fill="rgba(100,50,255,0.14)"/>
+          <polygon points="100,28 142,76 100,132 58,76" fill="none" stroke="#00d4ff" stroke-width="2.5" opacity="0.75"/>
+          <polygon points="100,28 142,76 100,86" fill="rgba(0,200,255,0.22)"/>
+          <polygon points="58,76 100,86 100,132" fill="rgba(0,150,255,0.18)"/>
+          <polygon points="100,28 58,76 100,86" fill="rgba(100,200,255,0.14)"/>
+          <line x1="100" y1="28" x2="100" y2="86" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+          <circle cx="146" cy="56" r="22" fill="#3a1a7a" opacity="0.8"/>
+          <circle cx="146" cy="48" r="12" fill="#9b30ff" opacity="0.9"/>
+          <polygon points="138,41 134,29 142,39" fill="#ffd700" opacity="0.9"/>
+          <polygon points="154,41 158,29 150,39" fill="#ffd700" opacity="0.9"/>
+          <text x="100" y="155" text-anchor="middle" font-family="sans-serif" font-size="23" font-weight="bold" fill="#ffd700" filter="url(#g2)">ইউ আইডি</text>
+          <text x="100" y="178" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold" fill="#ff8c00" filter="url(#g2)">টপআপ</text>
+          <rect x="158" y="5" width="36" height="17" fill="#6a0dad" rx="4" opacity="0.85"/>
+          <text x="176" y="17" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="white">STORE</text>
+        </svg>
+        <div class="cat-label">UID TOPUP (BD)</div>
+      </div>
+
+      <!-- 3. LEVEL UP PASS -->
+      <div class="cat-card" onclick="openOrder('levelup')">
+        <svg class="cat-thumb" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="bg3" cx="60%" cy="40%" r="70%"><stop offset="0%" stop-color="#0a2060"/><stop offset="100%" stop-color="#050a20"/></radialGradient><filter id="g3"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect width="200" height="200" fill="url(#bg3)"/>
+          <rect x="48" y="68" width="104" height="78" fill="#1a3080" rx="8"/>
+          <rect x="48" y="68" width="104" height="24" fill="#2244aa" rx="8"/>
+          <rect x="48" y="80" width="104" height="12" fill="#1a3080"/>
+          <polygon points="100,36 106,54 124,54 110,64 116,82 100,72 84,82 90,64 76,54 94,54" fill="#00d4ff" filter="url(#g3)" opacity="0.9"/>
+          <circle cx="76" cy="105" r="8" fill="rgba(0,212,255,0.35)"/>
+          <circle cx="100" cy="105" r="8" fill="rgba(255,215,0,0.45)"/>
+          <circle cx="124" cy="105" r="8" fill="rgba(0,212,255,0.35)"/>
+          <text x="100" y="163" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold" fill="#00d4ff" filter="url(#g3)">লেভেল আপ</text>
+          <text x="100" y="186" text-anchor="middle" font-family="Arial" font-size="17" font-weight="bold" fill="#ffd700" letter-spacing="2">PASS</text>
+          <rect x="158" y="5" width="36" height="17" fill="#6a0dad" rx="4" opacity="0.85"/>
+          <text x="176" y="17" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="white">STORE</text>
+        </svg>
+        <div class="cat-label">LEVEL UP PASS</div>
+      </div>
+
+      <!-- 4. EVO ACCESS -->
+      <div class="cat-card" onclick="openOrder('evo')">
+        <svg class="cat-thumb" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="bg4" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#1a0a2e"/><stop offset="100%" stop-color="#0a0515"/></radialGradient><filter id="g4"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect width="200" height="200" fill="url(#bg4)"/>
+          <circle cx="100" cy="95" r="62" fill="rgba(100,0,200,0.18)"/>
+          <polygon points="100,32 137,53 137,95 100,116 63,95 63,53" fill="none" stroke="#9b30ff" stroke-width="3" filter="url(#g4)"/>
+          <polygon points="100,40 130,58 130,90 100,108 70,90 70,58" fill="rgba(154,48,255,0.22)"/>
+          <text x="100" y="92" text-anchor="middle" font-family="Arial" font-size="46" font-weight="900" fill="#ffd700" filter="url(#g4)">E</text>
+          <text x="100" y="138" text-anchor="middle" font-family="sans-serif" font-size="23" font-weight="bold" fill="#dd88ff" filter="url(#g4)">ইভো</text>
+          <text x="100" y="163" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold" fill="#ff88dd" filter="url(#g4)">এক্সেস</text>
+          <rect x="158" y="5" width="36" height="17" fill="#6a0dad" rx="4" opacity="0.85"/>
+          <text x="176" y="17" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="white">STORE</text>
+        </svg>
+        <div class="cat-label">E-Badge / Evo Access<small>(BD)</small></div>
+      </div>
+
+      <!-- 5. WEEKLY LITE -->
+      <div class="cat-card" onclick="openOrder('lite')">
+        <svg class="cat-thumb" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="bg5" cx="40%" cy="40%" r="70%"><stop offset="0%" stop-color="#0a2040"/><stop offset="100%" stop-color="#040810"/></radialGradient><filter id="g5"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect width="200" height="200" fill="url(#bg5)"/>
+          <rect x="44" y="54" width="112" height="88" fill="#0a2860" rx="10"/>
+          <rect x="44" y="54" width="112" height="28" fill="#1040aa" rx="10"/>
+          <rect x="44" y="70" width="112" height="12" fill="#0a2860"/>
+          <text x="100" y="73" text-anchor="middle" font-family="Arial" font-size="22" font-weight="900" fill="#4499ff" filter="url(#g5)">W</text>
+          <circle cx="72" cy="100" r="10" fill="rgba(0,212,255,0.45)" filter="url(#g5)"/>
+          <circle cx="100" cy="100" r="10" fill="rgba(255,215,0,0.4)" filter="url(#g5)"/>
+          <circle cx="128" cy="100" r="10" fill="rgba(0,212,255,0.45)" filter="url(#g5)"/>
+          <circle cx="86" cy="122" r="7" fill="rgba(100,180,255,0.35)"/>
+          <circle cx="114" cy="122" r="7" fill="rgba(100,180,255,0.35)"/>
+          <text x="100" y="163" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#4499ff" filter="url(#g5)">উইকলি লাইট</text>
+          <text x="100" y="185" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#ffd700">BD Server</text>
+          <rect x="158" y="5" width="36" height="17" fill="#6a0dad" rx="4" opacity="0.85"/>
+          <text x="176" y="17" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="white">STORE</text>
+        </svg>
+        <div class="cat-label">Weekly Lite<small>BD Server</small></div>
+      </div>
+
+      <!-- 6. WEEKLY MEMBER -->
+      <div class="cat-card" onclick="openOrder('weekly')">
+        <svg class="cat-thumb" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="bg6" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#1a1a00"/><stop offset="100%" stop-color="#0d0a00"/></radialGradient><filter id="g6"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect width="200" height="200" fill="url(#bg6)"/>
+          <polygon points="100,22 118,76 174,76 128,110 146,164 100,130 54,164 72,110 26,76 82,76" fill="none" stroke="#ffd700" stroke-width="2" filter="url(#g6)"/>
+          <polygon points="100,36 113,76 155,76 122,99 134,139 100,116 66,139 78,99 45,76 87,76" fill="rgba(255,215,0,0.18)"/>
+          <text x="100" y="162" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="#ffd700" filter="url(#g6)">উইকলি মেম্বার</text>
+          <rect x="158" y="5" width="36" height="17" fill="#6a0dad" rx="4" opacity="0.85"/>
+          <text x="176" y="17" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="white">STORE</text>
+        </svg>
+        <div class="cat-label">Weekly Member<small>BD Server</small></div>
+      </div>
+
+      <!-- 7. Monthly Member -->
+      <div class="cat-card" onclick="openOrder('monthly')">
+        <svg class="cat-thumb" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="bg7" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#002a10"/><stop offset="100%" stop-color="#000d05"/></radialGradient><filter id="g7"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect width="200" height="200" fill="url(#bg7)"/>
+          <circle cx="100" cy="88" r="55" fill="none" stroke="#00e676" stroke-width="2.5" filter="url(#g7)"/>
+          <circle cx="100" cy="88" r="42" fill="rgba(0,230,118,0.1)"/>
+          <text x="100" y="96" text-anchor="middle" font-family="Arial" font-size="38" font-weight="900" fill="#00e676" filter="url(#g7)">M</text>
+          <text x="100" y="162" text-anchor="middle" font-family="sans-serif" font-size="17" font-weight="bold" fill="#00e676" filter="url(#g7)">মান্থলি</text>
+          <text x="100" y="183" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold" fill="#69f0ae">মেম্বার</text>
+          <rect x="158" y="5" width="36" height="17" fill="#6a0dad" rx="4" opacity="0.85"/>
+          <text x="176" y="17" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="white">STORE</text>
+        </svg>
+        <div class="cat-label">Monthly Member<small>BD Server</small></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ ORDER PAGE ============ -->
+<div class="page" id="page-order">
+  <div class="order-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="order-header-info">
+      <h2 id="order-title">Weekly Lite (BD Server)</h2>
+      <p>Game / Top up</p>
+    </div>
+  </div>
+
+  <div style="padding-bottom:10px">
+
+    <!-- Product Banner -->
+    <div class="product-banner">
+      <svg id="order-banner-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="200" fill="#0a2040"/>
+        <text x="100" y="110" text-anchor="middle" font-family="Arial" font-size="40" fill="#4499ff">W</text>
+      </svg>
+      <div>
+        <h3 id="order-banner-name">Weekly Lite</h3>
+        <p id="order-banner-desc">BD Server Weekly</p>
+      </div>
+    </div>
+
+    <!-- Step 1: Select Package -->
+    <div class="step-section">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div class="step-title">প্যাকেজ সিলেক্ট করুন</div>
+      </div>
+      <div class="step-body" id="step1-body">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Step 2: Player ID -->
+    <div class="step-section">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div class="step-title">প্লেয়ার আইডি বসান</div>
+      </div>
+      <div class="step-body">
+        <div class="input-label">আপনার Free Fire UID লিখুন</div>
+        <input type="number" class="player-input" id="player-id-input" placeholder="যেমনঃ 62649912">
+      </div>
+    </div>
+
+    <!-- Step 3: Payment Method -->
+    <div class="step-section">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div class="step-title">Select one option</div>
+      </div>
+      <div class="step-body">
+        <div class="payment-grid">
+          <div class="pay-option" id="pay-wallet" onclick="selectPayment('wallet')">
+            <div class="pay-logo">💰</div>
+            <div class="pay-name-bn">ওয়ালেট</div>
+            <div class="pay-name">FF Store Wallet</div>
+          </div>
+          <div class="pay-option selected" id="pay-mfs" onclick="selectPayment('mfs')">
+            <div class="pay-icons">
+              <div class="pay-icon-chip">bKash</div>
+              <div class="pay-icon-chip" style="color:#e2231a;border-color:#e2231a">নগদ</div>
+              <div class="pay-icon-chip" style="color:#5b2d8e;border-color:#5b2d8e">Rocket</div>
+            </div>
+            <div style="margin-top:8px;font-size:13px;font-weight:700;color:var(--text)">MFS Payment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Button -->
+    <div class="order-btn-wrap" style="margin-top:12px;margin-bottom:4px">
+      <button class="order-btn" onclick="placeOrder()">🛒 অর্ডার করুন</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ PAYMENT GATEWAY MODAL ============ -->
+<div class="pay-modal-overlay" id="payModal">
+  <div class="pay-modal">
+
+    <!-- Modal Top Bar -->
+    <div class="pay-modal-top">
+      <div class="pay-modal-title">💳 পেমেন্ট করুন</div>
+      <button class="pay-modal-close" onclick="closePayModal()">✕</button>
+    </div>
+
+    <!-- Amount Bar -->
+    <div class="modal-amount-bar">
+      <div class="modal-amount-label">মোট পরিমাণ</div>
+      <div class="modal-amount-val" id="modal-amount-display">৳ 35<span>BDT</span></div>
+    </div>
+
+    <!-- Mobile Banking Header -->
+    <div class="pay-method-selector">
+      <div class="pay-method-header">📱 Mobile Banking</div>
+      <div class="pay-method-options">
+        <!-- bKash button -->
+        <button class="pay-method-btn active-method" id="btn-bkash" onclick="showPayMethod('bkash')">
+          <svg class="bkash-logo-svg" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+            <rect width="120" height="40" rx="6" fill="#e2136e"/>
+            <text x="60" y="27" text-anchor="middle" font-family="Arial" font-size="18" font-weight="900" fill="white">bKash</text>
+          </svg>
+        </button>
+        <!-- Nagad button -->
+        <button class="pay-method-btn" id="btn-nagad" onclick="showPayMethod('nagad')">
+          <svg class="nagad-logo-svg" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+            <rect width="120" height="40" rx="6" fill="#e2231a"/>
+            <text x="60" y="27" text-anchor="middle" font-family="Arial" font-size="18" font-weight="900" fill="white">নগদ</text>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- bKash Instructions -->
+    <div class="pay-instruction bkash-inst show" id="inst-bkash">
+      <div class="pay-inst-header">
+        ট্রানজেকশন আইডি দিন
+        <div class="pay-amount-badge" id="bkash-amount-badge">৳ 35</div>
+      </div>
+      <div class="tx-input-wrap">
+        <input type="text" class="tx-input" id="bkash-tx-input" placeholder="ট্রানজেকশন আইডি দিন">
+      </div>
+      <div class="pay-inst-body">
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div><strong>*247#</strong> ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।</div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div><strong style="color:#e2136e">"Send Money"</strong> -এ ক্লিক করুন।</div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>প্রাপক নম্বর হিসেবে এই নম্বরটি লিখুনঃ<br>
+            <span class="pay-num">01401058435</span>
+            <button class="copy-btn" onclick="copyNum('01401058435',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>টাকার পরিমাণঃ <strong style="color:#e2136e" id="bkash-inst-amount">35</strong></div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>নিশ্চিত করতে এখন আপনার bKash মোবাইল মেনু পিন লিখুন।</div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>সবকিছু ঠিক থাকলে, আপনি bKash থেকে একটি নিশ্চিতকরণ বার্তা পাবেন।</div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>এখন উপরের বক্সে আপনার <strong>Transaction ID</strong> দিন এবং নিচের <strong style="color:#e2136e">VERIFY</strong> বাটনে ক্লিক করুন।</div>
+        </div>
+      </div>
+      <button class="verify-btn" onclick="verifyPayment()">VERIFY</button>
+    </div>
+
+    <!-- Nagad Instructions -->
+    <div class="pay-instruction nagad-inst" id="inst-nagad">
+      <div class="pay-inst-header">
+        ট্রানজেকশন আইডি দিন
+        <div class="pay-amount-badge" id="nagad-amount-badge">৳ 35</div>
+      </div>
+      <div class="tx-input-wrap">
+        <input type="text" class="tx-input" id="nagad-tx-input" placeholder="ট্রানজেকশন আইডি দিন">
+      </div>
+      <div class="pay-inst-body">
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div><strong>*167#</strong> ডায়াল করে আপনার Nagad মোবাইল মেনুতে যান অথবা Nagad অ্যাপে যান।</div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div><strong style="color:#e2231a">"Send Money"</strong> -এ ক্লিক করুন।</div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>প্রাপক নম্বর হিসেবে এই নম্বরটি লিখুনঃ<br>
+            <span class="pay-num">01989471231</span>
+            <button class="copy-btn" onclick="copyNum('01989471231',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>টাকার পরিমাণঃ <strong style="color:#e2231a" id="nagad-inst-amount">35</strong></div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>নিশ্চিত করতে এখন আপনার Nagad মোবাইল মেনু পিন লিখুন।</div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>সবকিছু ঠিক থাকলে, আপনি Nagad থেকে একটি নিশ্চিতকরণ বার্তা পাবেন।</div>
+        </div>
+        <div class="pay-inst-step">
+          <div class="pay-bullet"></div>
+          <div>এখন উপরের বক্সে আপনার <strong>Transaction ID</strong> দিন এবং নিচের <strong style="color:#e2231a">VERIFY</strong> বাটনে ক্লিক করুন।</div>
+        </div>
+      </div>
+      <button class="verify-btn" onclick="verifyPayment()">VERIFY</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ BOTTOM NAV ============ -->
+<div class="bottomnav">
+  <div class="bnav-item active" onclick="goHome()">
+    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    Home
+  </div>
+  <div class="bnav-item">
+    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M21 18v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1h-9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9zm-9-2h10V8H12v8zm4-2.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+    Add Money
+  </div>
+  <div class="bnav-item">
+    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+    My Orders
+  </div>
+  <div class="bnav-item">
+    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/></svg>
+    My Codes
+  </div>
+  <div class="bnav-item">
+    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+    My Account
+  </div>
+</div>
+
+<button class="help-btn">সাহায্য লাগবে?</button>
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== Product Data ======
+const products = {
+  like: {
+    title: 'Free Fire – 200 Like',
+    bannerName: '200 Like (প্রতিদিন)',
+    bannerDesc: 'প্রতিদিন ১ আইডিতে ১ বার',
+    packages: [
+      { name: '২০০ লাইক', desc: 'প্রতিদিন ১ আইডিতে ১ বার', price: 15, priceLabel: '১৫৳' }
+    ]
+  },
+  uid: {
+    title: 'UID TOPUP (BD)',
+    bannerName: 'ইউ আইডি টপআপ',
+    bannerDesc: 'BD Server Direct Recharge',
+    packages: [
+      { name: '100 ডায়মন্ড', desc: '100 Diamonds', price: 90, priceLabel: '৯০৳', hot: true },
+      { name: '200 ডায়মন্ড', desc: '200 Diamonds', price: 175, priceLabel: '১৭৫৳' },
+      { name: '500 ডায়মন্ড', desc: '500 Diamonds', price: 430, priceLabel: '৪৩০৳' },
+      { name: '1000 ডায়মন্ড', desc: '1000 Diamonds', price: 850, priceLabel: '৮৫০৳', hot: true },
+    ]
+  },
+  levelup: {
+    title: 'LEVEL UP PASS',
+    bannerName: 'লেভেল আপ PASS',
+    bannerDesc: 'BD Server',
+    packages: [
+      { name: 'Level Up Pass', desc: 'Season Pass', price: 120, priceLabel: '১২০৳', hot: true },
+      { name: 'Level Up Pass +', desc: 'Premium Pass', price: 240, priceLabel: '২৪০৳' },
+    ]
+  },
+  evo: {
+    title: 'E-Badge / Evo Access (BD)',
+    bannerName: 'ইভো এক্সেস',
+    bannerDesc: 'BD Server Evo Access',
+    packages: [
+      { name: 'Evo Access', desc: 'E-Badge Access', price: 180, priceLabel: '১৮০৳', hot: true },
+    ]
+  },
+  lite: {
+    title: 'Weekly Lite (BD Server)',
+    bannerName: 'Weekly Lite',
+    bannerDesc: 'BD Server Weekly',
+    packages: [
+      { name: 'Weekly Lite', desc: '7 দিনের জন্য', price: 35, priceLabel: '৩৫৳', hot: true },
+    ]
+  },
+  weekly: {
+    title: 'Weekly Member (BD Server)',
+    bannerName: 'Weekly Member',
+    bannerDesc: 'BD Server Weekly',
+    packages: [
+      { name: 'Weekly Member', desc: '7 দিনের সদস্যপদ', price: 65, priceLabel: '৬৫৳', hot: true },
+    ]
+  },
+  monthly: {
+    title: 'Monthly Member (BD Server)',
+    bannerName: 'Monthly Member',
+    bannerDesc: 'BD Server Monthly',
+    packages: [
+      { name: 'Monthly Member', desc: '30 দিনের সদস্যপদ', price: 220, priceLabel: '২২০৳', hot: true },
+    ]
+  }
+};
+
+let selectedPackagePrice = 0;
+let selectedPayment = 'mfs';
+
+function openOrder(type) {
+  const p = products[type];
+  if (!p) return;
+
+  document.getElementById('order-title').textContent = p.title;
+  document.getElementById('order-banner-name').textContent = p.bannerName;
+  document.getElementById('order-banner-desc').textContent = p.bannerDesc;
+
+  // Build package options
+  const body = document.getElementById('step1-body');
+  const isSingle = p.packages.length === 1;
+
+  if (isSingle) {
+    const pkg = p.packages[0];
+    selectedPackagePrice = pkg.price;
+    body.innerHTML = `<div class="recharge-grid">
+      <div class="recharge-pill selected" onclick="selectPkg(this,${pkg.price})">
+        <div class="rp-name">${pkg.name}</div>
+        <div class="rp-desc">${pkg.desc}</div>
+        <div class="rp-price">${pkg.priceLabel}</div>
+      </div>
+    </div>`;
+  } else {
+    selectedPackagePrice = p.packages[0].price;
+    const cols = p.packages.map((pkg, i) => `
+      <div class="recharge-pill-sm ${i===0?'selected':''}" onclick="selectPkgSm(this,${pkg.price})">
+        ${pkg.hot ? '<div class="hot-tag">🔥 HOT</div>' : ''}
+        <div class="rp-name">${pkg.name}</div>
+        <div class="rp-price"><span>৳</span>${pkg.price}</div>
+      </div>
+    `).join('');
+    body.innerHTML = `<div class="recharge-2col">${cols}</div>`;
+  }
+
+  document.getElementById('player-id-input').value = '';
+  selectPayment('mfs');
+
+  document.getElementById('page-home').classList.remove('active');
+  document.getElementById('page-order').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function selectPkg(el, price) {
+  document.querySelectorAll('.recharge-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPackagePrice = price;
+}
+
+function selectPkgSm(el, price) {
+  document.querySelectorAll('.recharge-pill-sm').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPackagePrice = price;
+}
+
+function selectPayment(type) {
+  selectedPayment = type;
+  document.getElementById('pay-wallet').classList.toggle('selected', type === 'wallet');
+  document.getElementById('pay-mfs').classList.toggle('selected', type === 'mfs');
+}
+
+function goHome() {
+  document.getElementById('page-order').classList.remove('active');
+  document.getElementById('page-home').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function placeOrder() {
+  const uid = document.getElementById('player-id-input').value.trim();
+  if (!uid) {
+    showToast('⚠️ প্লেয়ার আইডি লিখুন');
+    return;
+  }
+  if (selectedPayment === 'wallet') {
+    showToast('💰 Wallet থেকে অর্ডার প্রসেস হচ্ছে...');
+    return;
+  }
+  // Open payment modal
+  openPayModal();
+}
+
+function openPayModal() {
+  const amt = selectedPackagePrice;
+  document.getElementById('modal-amount-display').innerHTML = `৳ ${amt}<span>BDT</span>`;
+  document.getElementById('bkash-amount-badge').textContent = `৳ ${amt}`;
+  document.getElementById('nagad-amount-badge').textContent = `৳ ${amt}`;
+  document.getElementById('bkash-inst-amount').textContent = amt;
+  document.getElementById('nagad-inst-amount').textContent = amt;
+  document.getElementById('bkash-tx-input').value = '';
+  document.getElementById('nagad-tx-input').value = '';
+  showPayMethod('bkash');
+  document.getElementById('payModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePayModal() {
+  document.getElementById('payModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function showPayMethod(method) {
+  // Toggle buttons
+  document.getElementById('btn-bkash').classList.toggle('active-method', method === 'bkash');
+  document.getElementById('btn-nagad').classList.toggle('active-method', method === 'nagad');
+  // Toggle instructions
+  document.getElementById('inst-bkash').classList.toggle('show', method === 'bkash');
+  document.getElementById('inst-nagad').classList.toggle('show', method === 'nagad');
+}
+
+function copyNum(num, btn) {
+  navigator.clipboard.writeText(num).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ Copied';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  }).catch(() => {
+    showToast('নম্বরটি কপি করুন: ' + num);
+  });
+}
+
+function verifyPayment() {
+  const isBkash = document.getElementById('inst-bkash').classList.contains('show');
+  const txInput = isBkash
+    ? document.getElementById('bkash-tx-input')
+    : document.getElementById('nagad-tx-input');
+  const tx = txInput.value.trim();
+  if (!tx) {
+    showToast('⚠️ Transaction ID লিখুন');
+    txInput.focus();
+    return;
+  }
+  closePayModal();
+  showToast('✅ অর্ডার সফলভাবে সম্পন্ন হয়েছে!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Close modal when clicking overlay background
+document.getElementById('payModal').addEventListener('click', function(e) {
+  if (e.target === this) closePayModal();
+});
+</script>
+</body>
+</html>
